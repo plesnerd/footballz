@@ -59,6 +59,7 @@ window.onload = function () {
     monaco: { name: "AS Monaco", cost: 75, image: "monaco.png" },
     marseille: { name: "Marseille", cost: 80, image: "marseille.png" },
     dortmund: { name: "Dortmund", cost: 85, image: "dortmund.png" },
+    athleticBilbao: { name: "Athletic Bilbao", cost: 85, image: "bilbao.png" },
     leverkusen: { name: "Bayer Leverkusen", cost: 85, image: "leverkusen.png" },
     atletico: { name: "Atletico Madrid", cost: 95, image: "atletico.png" },
     psg: { name: "Paris SG", cost: 100, image: "psg.png" },
