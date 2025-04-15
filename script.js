@@ -4,15 +4,15 @@ window.onload = function () {
   const gameDiv = document.getElementById("gameDiv");
   const helpDiv = document.getElementById("helpDiv");
   const shopDiv = document.getElementById("shopDiv");
-  const eventShopDiv = document.getElementById("eventShopDiv"); // NEW
+  const eventShopDiv = document.getElementById("eventShopDiv"); // NEW Event Shop screen
 
   const startButton = document.getElementById("startButton");
   const helpButton = document.getElementById("helpButton");
   const shopButton = document.getElementById("shopButton");
-  const eventShopButton = document.getElementById("eventShopButton"); // NEW
+  const eventShopButton = document.getElementById("eventShopButton"); // NEW Event Shop button
   const backFromHelpButton = document.getElementById("backFromHelpButton");
   const backFromShopButton = document.getElementById("backFromShopButton");
-  const backFromEventShopButton = document.getElementById("backFromEventShopButton"); // NEW
+  const backFromEventShopButton = document.getElementById("backFromEventShopButton"); // NEW Back button for event shop
   const backToMenuButton = document.getElementById("backToMenuButton");
   const launchButton = document.getElementById("launchButton");
 
@@ -22,13 +22,12 @@ window.onload = function () {
   // Make the canvas fill the window.
   let groundY = 0; // Will be set by resizeCanvas
   const ballRadius = 28,
-        coinRadius = 17, // Coins are drawn as images now
+        coinRadius = 17, // Coins are drawn as white circles
         gravity = 1000; // pixels per second²
-
   let coinImage = new Image();
   coinImage.src = "ball.png";
   let groundTexture = new Image();
-  groundTexture.src = "ground_texture.jpeg"; // use your file name here
+  groundTexture.src = "ground_texture.jpeg"; // use your file name
   let groundPattern = null;
   // When the image is loaded, create the pattern.
   groundTexture.onload = function () {
@@ -56,41 +55,32 @@ window.onload = function () {
 
   const skinOptions = {
     default: { name: "Default", color: "grey", cost: 0 },
-    
     mumbaiCity: { name: "Mumbai City FC", cost: 75, image: "mumbai.png" },
-
     monaco: { name: "AS Monaco", cost: 75, image: "monaco.png" },
-
     marseille: { name: "Marseille", cost: 80, image: "marseille.png" },
-    
     dortmund: { name: "Dortmund", cost: 85, image: "dortmund.png" },
-    
     leverkusen: { name: "Bayer Leverkusen", cost: 85, image: "leverkusen.png" },
-
     atletico: { name: "Atletico Madrid", cost: 95, image: "atletico.png" },
-    
     psg: { name: "Paris SG", cost: 100, image: "psg.png" },
-    
     bayernMunich: { name: "Bayern Munich", cost: 100, image: "bayern.png" },
-      
     realMadrid: { name: "Real Madrid", cost: 100, image: "real_madrid.png" },
-    
     fcBarcelona: { name: "Barcelona", cost: 125, image: "barca.png" }
   };
 
-  // Event skin options with an "enabled" property.
+  // Event skins – these will have the same layout as normal skins.
+  // "Release Day Blue" is enabled and will function as a normal skin.
   const eventSkinOptions = {
     rare: { name: "Release Day Blue", color: "light blue", cost: 15, enabled: true },
     soon: { name: "coming soon", color: "black", cost: 99999, enabled: false }
     // Add more event skins as needed.
   };
-
+  
   // Retrieve purchased skins or default if none
   let purchasedSkins = JSON.parse(localStorage.getItem("skinsFootballz")) || { default: true };
   let selectedSkinId = localStorage.getItem("selectedSkinFootballz") || "default";
   let selectedSkin = skinOptions[selectedSkinId];
 
-  // Cache for loaded skin images
+  // Cache for loaded skin images so they're only loaded once
   let skinImageCache = {};
 
   // Local storage update helpers
@@ -115,7 +105,7 @@ window.onload = function () {
     gameDiv.style.display = "none";
     helpDiv.style.display = "none";
     shopDiv.style.display = "none";
-    eventShopDiv.style.display = "none"; // Hide event shop
+    eventShopDiv.style.display = "none";
   }
   function showGame() {
     currentState = "game";
@@ -152,7 +142,7 @@ window.onload = function () {
     eventShopDiv.style.display = "flex";
     populateEventShop();
   }
-
+  
   // Navigation event listeners.
   startButton.addEventListener("click", showGame);
   helpButton.addEventListener("click", showHelp);
@@ -165,13 +155,12 @@ window.onload = function () {
     gameRunning = false;
     showMenu();
   });
-
+  
   // --- Game logic functions ---
-
   function startGame() {
     score = 0;
     lastTime = performance.now();
-    gameStartTime = lastTime; // Record start time
+    gameStartTime = lastTime; // Record start time for gradual damping
     gameRunning = true;
     groundY = canvas.height - 50;
     ball = {
@@ -180,53 +169,43 @@ window.onload = function () {
       radius: ballRadius,
       vx: 0,
       vy: 0,
-      launched: false
+      launched: false,
     };
     coins = [];
     spawnCoins();
     launchButton.innerText = "Launch";
     requestAnimationFrame(gameLoop);
   }
-
-  // Spawn coins ahead of the ball.
   function spawnCoins() {
     let threshold = ball.x + canvas.width;
     let maxCoinX = coins.length > 0 ? Math.max(...coins.map(c => c.x)) : ball.x + 200;
     while (maxCoinX < threshold) {
-      let spacing = 200 + Math.random() * 150;
+      let spacing = 200 + Math.random() * 150; // Spacing between 200 and 350 pixels.
       let newX = maxCoinX + spacing;
-      let randomYOffset = Math.random() * 210 - 200;
+      let randomYOffset = Math.random() * 210 - 200; // Random vertical offset between -10 and +10 pixels.
       coins.push({
         x: newX,
         y: groundY - coinRadius + randomYOffset,
         radius: coinRadius,
-        collected: false
+        collected: false,
       });
       maxCoinX = newX;
     }
   }
-
   function gameLoop(timestamp) {
     if (!gameRunning) return;
     let dt = (timestamp - lastTime) / 1000;
     lastTime = timestamp;
-
-    // Calculate elapsed time (in seconds) since game start.
     let elapsedTime = (timestamp - gameStartTime) / 1000;
-
     if (ball.launched) {
       ball.x += ball.vx * dt;
       ball.y += ball.vy * dt;
       ball.vy += gravity * dt;
-
-      // Apply extra damping after 2 minutes (120 seconds)
       if (elapsedTime > 672) { // 120 seconds = 2 minutes
-        const extraDampingFactor = 0.99; 
+        const extraDampingFactor = 0.99;
         ball.vx *= extraDampingFactor;
         ball.vy *= extraDampingFactor;
       }
-
-      // Check collision with the ground.
       if (ball.y + ball.radius >= groundY) {
         ball.y = groundY - ball.radius;
         if (Math.abs(ball.vy) > 200) {
@@ -246,8 +225,6 @@ window.onload = function () {
           }
         }
       }
-
-      // Check collisions with coins.
       coins.forEach((coin) => {
         if (!coin.collected) {
           let dx = ball.x - coin.x;
@@ -260,8 +237,6 @@ window.onload = function () {
         }
       });
     }
-
-    // Update score.
     score = Math.max(score, ball.x - 50);
     if (score > highScore) {
       highScore = score;
@@ -269,21 +244,16 @@ window.onload = function () {
     }
     spawnCoins();
     coins = coins.filter((coin) => coin.x > ball.x - 500);
-
     let offset = Math.max(0, ball.x - canvas.width / 3);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(-offset, 0);
-
-    // Draw the ground using the texture pattern if available.
     if (groundPattern) {
       ctx.fillStyle = groundPattern;
     } else {
       ctx.fillStyle = "green";
     }
     ctx.fillRect(offset, groundY, canvas.width, canvas.height - groundY);
-
-    // Draw coins.
     coins.forEach((coin) => {
       if (!coin.collected) {
         ctx.drawImage(
@@ -295,8 +265,6 @@ window.onload = function () {
         );
       }
     });
-
-    // Draw the ball.
     if (selectedSkin.image) {
       if (!skinImageCache[selectedSkinId]) {
         let img = new Image();
@@ -317,18 +285,14 @@ window.onload = function () {
       ctx.fill();
     }
     ctx.restore();
-
     document.getElementById("scoreDisplay").innerText = "Score: " + Math.floor(score);
     document.getElementById("highScoreDisplay").innerText = "High: " + Math.floor(highScore);
-
     requestAnimationFrame(gameLoop);
   }
-
   function endGame() {
     gameRunning = false;
     launchButton.innerText = "Restart";
   }
-
   launchButton.addEventListener("click", () => {
     if (!ball.launched && ball.x > 50) {
       startGame();
@@ -343,7 +307,6 @@ window.onload = function () {
       ball.launched = true;
     }
   });
-
   // --- Shop logic (skins & upgrades) ---
   function populateShop() {
     document.getElementById("coinCountDisplay").innerText = coinCount;
@@ -353,7 +316,6 @@ window.onload = function () {
       let skin = skinOptions[key];
       let itemDiv = document.createElement("div");
       itemDiv.className = "skinItem";
-
       let previewDiv = document.createElement("div");
       previewDiv.className = "skinPreview";
       if (skin.image) {
@@ -363,15 +325,12 @@ window.onload = function () {
         previewDiv.style.backgroundColor = skin.color;
       }
       itemDiv.appendChild(previewDiv);
-
       let nameP = document.createElement("p");
       nameP.innerText = skin.name;
       itemDiv.appendChild(nameP);
-
       let costP = document.createElement("p");
       costP.innerText = skin.cost > 0 ? "Cost: " + skin.cost : "Free";
       itemDiv.appendChild(costP);
-
       let actionButton = document.createElement("button");
       actionButton.className = "button-64";
       if (purchasedSkins[key]) {
@@ -407,14 +366,12 @@ window.onload = function () {
       itemDiv.appendChild(actionButton);
       skinsContainer.appendChild(itemDiv);
     }
-    
-    // Upgrades container and row.
+    // --- Upgrades ---
     let upgradesDiv = document.createElement("div");
     upgradesDiv.id = "upgradesContainer";
     let upgradesHeader = document.createElement("h2");
     upgradesHeader.innerText = "Upgrades";
     upgradesDiv.appendChild(upgradesHeader);
-
     let upgrades = [
       {
         title: `Velocity Boost (Level ${velocityUpgrade})`,
@@ -431,26 +388,20 @@ window.onload = function () {
         onBuy: () => bounceUpgrade++
       }
     ];
-
     let upgradesRow = document.createElement("div");
     upgradesRow.className = "upgradesRow";
     upgradesDiv.appendChild(upgradesRow);
-
     upgrades.forEach(upgrade => {
       let itemDiv = document.createElement("div");
       itemDiv.className = "skinItem";
-      
       let title = document.createElement("p");
       title.innerText = upgrade.title;
       itemDiv.appendChild(title);
-      
       let costP = document.createElement("p");
       costP.innerText = "Cost: " + upgrade.cost;
       itemDiv.appendChild(costP);
-      
       let actionButton = document.createElement("button");
       actionButton.className = "button-64";
-
       if (upgrade.level >= upgrade.maxLevel) {
         actionButton.innerText = "Max Level";
         actionButton.disabled = true;
@@ -468,84 +419,85 @@ window.onload = function () {
           }
         });
       }
-      
       itemDiv.appendChild(actionButton);
       upgradesRow.appendChild(itemDiv);
     });
-
-    // Remove existing upgrades container if it exists
     const existingUpgrades = document.getElementById("upgradesContainer");
     if (existingUpgrades) {
       existingUpgrades.remove();
     }
-    
-    // Add upgrades container after skins container
     shopDiv.appendChild(upgradesDiv);
-
-    // Move back button to the bottom
     const backButton = document.getElementById("backFromShopButton");
     shopDiv.appendChild(backButton);
   }
-
-  // Event Shop logic
+  
+  // --- Event Shop logic (same layout as normal shop) ---
   function populateEventShop() {
     const container = document.getElementById("eventSkinsContainer");
     container.innerHTML = "";
-    let count = 0;
     for (let key in eventSkinOptions) {
       let skin = eventSkinOptions[key];
       let itemDiv = document.createElement("div");
       itemDiv.className = "skinItem";
-      
-      // Create preview
       let previewDiv = document.createElement("div");
       previewDiv.className = "skinPreview";
       if (skin.image) {
         previewDiv.style.backgroundImage = `url(${skin.image})`;
         previewDiv.style.backgroundSize = "cover";
-      } else {
-        previewDiv.style.backgroundColor = "#888";
+      } else if (skin.color) {
+        previewDiv.style.backgroundColor = skin.color;
       }
       itemDiv.appendChild(previewDiv);
-      
-      // Create name and cost display
       let nameP = document.createElement("p");
       nameP.innerText = skin.name;
       itemDiv.appendChild(nameP);
-      
       let costP = document.createElement("p");
       costP.innerText = skin.cost > 0 ? "Cost: " + skin.cost : "Free";
       itemDiv.appendChild(costP);
-      
-      // Create action button
       let actionButton = document.createElement("button");
       actionButton.className = "button-64";
+      // If already purchased, allow selection (same as normal shop)
       if (purchasedEventSkins[key]) {
-        actionButton.innerText = "Owned";
-        actionButton.disabled = true;
-      } else if (!skin.enabled) {
-        actionButton.innerText = "Disabled";
-        actionButton.disabled = true;
-      } else {
-        actionButton.innerText = "Buy";
-        actionButton.addEventListener("click", () => {
-          if (coinCount >= skin.cost) {
-            coinCount -= skin.cost;
-            purchasedEventSkins[key] = true;
-            updateCoinStorage();
-            localStorage.setItem("purchasedEventSkins", JSON.stringify(purchasedEventSkins));
+        if (selectedSkinId === key) {
+          actionButton.innerText = "Selected";
+          actionButton.disabled = true;
+        } else {
+          actionButton.innerText = "Select";
+          actionButton.addEventListener("click", () => {
+            selectedSkinId = key;
+            // Merge event skin into our skin options for selection
+            selectedSkin = eventSkinOptions[key];
+            // Also add to purchasedSkins so it shows up in the normal shop later if needed
+            purchasedSkins[key] = true;
+            localStorage.setItem("selectedSkinFootballz", key);
             populateEventShop();
-          } else {
-            alert("Not enough coins!");
-          }
-        });
+          });
+        }
+      } else {
+        if (!skin.enabled) {
+          actionButton.innerText = "Disabled";
+          actionButton.disabled = true;
+        } else {
+          actionButton.innerText = "Buy";
+          actionButton.addEventListener("click", () => {
+            if (coinCount >= skin.cost) {
+              coinCount -= skin.cost;
+              purchasedEventSkins[key] = true;
+              purchasedSkins[key] = true; // Add to purchased skins so it appears in the normal shop too.
+              updateCoinStorage();
+              localStorage.setItem("purchasedEventSkins", JSON.stringify(purchasedEventSkins));
+              populateEventShop();
+            } else {
+              alert("Not enough coins!");
+            }
+          });
+        }
       }
       itemDiv.appendChild(actionButton);
       container.appendChild(itemDiv);
-      count++;
     }
-    document.getElementById("eventSkinCountDisplay").innerText = count;
+    // Removed the skin counter element.
   }
-
+  
   showMenu();
 };
