@@ -53,13 +53,25 @@ window.onload = function () {
   
   const skinOptions = {
     default: { name: "Default", color: "grey", cost: 0 },
-    ice: { name: "cold palmer", color: "lightblue", cost: 5 },
-   
+    
     mumbaiCity: { name: "Mumbai City FC", cost: 75, image: "mumbai.png" },
-    dortmund: { name: "Dortmund", cost: 80, image: "dortmund.png" },
+
+    monaco: { name: "AS Monaco", cost: 75, image: "monaco.png" },
+
+    marseille: { name: "Marseille", cost: 80, image: "marseille.png" },
+    
+    dortmund: { name: "Dortmund", cost: 85, image: "dortmund.png" },
+    
+    leverkusen: { name: "Bayer Leverkusen", cost: 85, image: "leverkusen.png" },
+
+    atletico: { name: "Atletico Madrid", cost: 95, image: "atletico.png" },
+    
+    psg: { name: "Paris SG", cost: 100, image: "psg.png" },
+    
     bayernMunich: { name: "Bayern Munich", cost: 100, image: "bayern.png" },
       
     realMadrid: { name: "Real Madrid", cost: 100, image: "real_madrid.png" },
+    
     fcBarcelona: { name: "Barcelona", cost: 125, image: "barca.png" }
   
 
