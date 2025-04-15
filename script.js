@@ -49,6 +49,7 @@ window.onload = function () {
 
   let velocityUpgrade = parseInt(localStorage.getItem("velocityUpgradeFootballz")) || 0;
   let bounceUpgrade = parseInt(localStorage.getItem("bounceUpgradeFootballz")) || 0;
+  let purchasedEventSkins = JSON.parse(localStorage.getItem("purchasedEventSkins")) || {};
 
   
   const skinOptions = {
@@ -79,6 +80,13 @@ window.onload = function () {
 
   };
 
+  const eventSkinOptions = {
+    rare: { name: "Release Day Blue", color: "light blue", cost: 15, enabled: true },
+
+    soon: { name: "coming soon", color: "black", cost: 99999, enabled: false }
+    // Add more event skins as needed.
+  };
+  
   // Retrieve purchased skins or default if none
   let purchasedSkins = JSON.parse(localStorage.getItem("skinsFootballz")) || { default: true };
   let selectedSkinId = localStorage.getItem("selectedSkinFootballz") || "default";
@@ -133,17 +141,29 @@ window.onload = function () {
     shopDiv.style.display = "flex";
     populateShop();
   }
-
+  function showEventShop() {
+    currentState = "eventShop";
+    menuDiv.style.display = "none";
+    gameDiv.style.display = "none";
+    helpDiv.style.display = "none";
+    shopDiv.style.display = "none";
+    eventShopDiv.style.display = "flex";
+    populateEventShop();
+  }
+  
   // Navigation event listeners.
   startButton.addEventListener("click", showGame);
   helpButton.addEventListener("click", showHelp);
   shopButton.addEventListener("click", showShop);
   backFromHelpButton.addEventListener("click", showMenu);
   backFromShopButton.addEventListener("click", showMenu);
+  eventShopButton.addEventListener("click", showEventShop);
+  backFromEventShopButton.addEventListener("click", showMenu);
   backToMenuButton.addEventListener("click", () => {
     gameRunning = false; // Stop current game loop
     showMenu();
   });
+  
 
 // --- Game logic functions ---
 
@@ -402,7 +422,63 @@ window.onload = function () {
       itemDiv.appendChild(actionButton);
       skinsContainer.appendChild(itemDiv);
     }
-
+    function populateEventShop() {
+      const container = document.getElementById("eventSkinsContainer");
+      container.innerHTML = "";
+      let count = 0;
+      for (let key in eventSkinOptions) {
+        let skin = eventSkinOptions[key];
+        let itemDiv = document.createElement("div");
+        itemDiv.className = "skinItem";
+        
+        // Create preview
+        let previewDiv = document.createElement("div");
+        previewDiv.className = "skinPreview";
+        if (skin.image) {
+          previewDiv.style.backgroundImage = `url(${skin.image})`;
+          previewDiv.style.backgroundSize = "cover";
+        }
+        itemDiv.appendChild(previewDiv);
+        
+        // Create name and cost display
+        let nameP = document.createElement("p");
+        nameP.innerText = skin.name;
+        itemDiv.appendChild(nameP);
+        
+        let costP = document.createElement("p");
+        costP.innerText = skin.cost > 0 ? "Cost: " + skin.cost : "Free";
+        itemDiv.appendChild(costP);
+        
+        // Create action button
+        let actionButton = document.createElement("button");
+        actionButton.className = "button-64";
+        if (purchasedEventSkins[key]) {
+          actionButton.innerText = "Owned";
+          actionButton.disabled = true;
+        } else if (!skin.enabled) {
+          actionButton.innerText = "Disabled";
+          actionButton.disabled = true;
+        } else {
+          actionButton.innerText = "Buy";
+          actionButton.addEventListener("click", () => {
+            if (coinCount >= skin.cost) {
+              coinCount -= skin.cost;
+              purchasedEventSkins[key] = true;
+              updateCoinStorage();
+              localStorage.setItem("purchasedEventSkins", JSON.stringify(purchasedEventSkins));
+              populateEventShop();
+            } else {
+              alert("Not enough coins!");
+            }
+          });
+        }
+        itemDiv.appendChild(actionButton);
+        container.appendChild(itemDiv);
+        count++;
+      }
+      document.getElementById("eventSkinCountDisplay").innerText = count;
+    }
+    
     // Create a separate container for upgrades
     let upgradesDiv = document.createElement("div");
     upgradesDiv.id = "upgradesContainer";

@@ -23,6 +23,9 @@
     </button>
     <button  id="shopButton" role="button">
       <span class="text">Shop</span>
+      <button class="button-64" id="eventShopButton" role="button">
+        <span class="text">Event Shop</span></button>
+
     </button>
   </div>
 
@@ -34,7 +37,13 @@
       </p>
   </div>
 
-
+  <div id="eventShopDiv" style="display: none;">
+    <h2>Event Shop</h2>
+    <p>Event Skins: <span id="eventSkinCountDisplay">0</span></p>
+    <div id="eventSkinsContainer"></div>
+    <button class="button-64" id="backFromEventShopButton" role="button"><span class="text">Back</span></button>
+  </div>
+  
 
   <!-- Game Screen -->
   <div id="gameDiv" style="display: none; position: relative;">
