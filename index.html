@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Footballz</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+  @import url('https://fonts.googleapis.com/css2?family=Freeman&family=Pixelify+Sans:wght@400..700&family=Press+Start+2P&display=swap');
+  </style>
+
+</head>
+<body>
+  <!-- Menu Screen -->
+  <div id="menuDiv">
+    <img src="textlogo.png" style="width: 400px;
+      height: 150pxpx;" alt="logo">
+    <button  id="startButton" role="button">
+      <span class="text">Start</span>
+    </button>
+    <button  id="helpButton" role="button">
+      <span class="text">Help</span>
+    </button>
+    <button  id="shopButton" role="button">
+      <span class="text">Shop</span>
+    </button>
+  </div>
+
+
+  </div>
+   <p style="text-align:center;"> </p>
+  <div style="position: relative">
+      <p style="position: fixed; bottom: 0; width:100%; text-align: center"> made by bluebay and flxme👻 👑
+      </p>
+  </div>
+
+
+
+  <!-- Game Screen -->
+  <div id="gameDiv" style="display: none; position: relative;">
+    <div id="scoreBoard">
+      <div id="scoreDisplay">Score: 0</div>
+      <div id="highScoreDisplay">High: 0</div>
+      <button  id="backToMenuButton" role="button">
+        <span class="text">Menu</span>
+      </button>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <!-- Launch button is positioned with CSS -->
+    <button  id="launchButton" style="margin-bottom: -17px;" role="button">
+      <span class="text" > Launch</span>
+    </button>
+  </div>
+
+  <!-- Help Screen -->
+  <div id="helpDiv" style="display: none;">
+    <h2>Help</h2>
+    <p>
+      Launch the ball as far as you can, while collecting balls scattered along the ground.
+      Visit the shop to purchase skins and upgrades.
+ 
+      <br>
+      <br>
+      <br>
+      <br>
+<br> 
+<br>
+
+
+
+
+
+
+FAQ: <br> 
+Q: Why is the bounciness upgrade capped at 4? <br>
+A: The bounciness upgrade is capped at 4, due to the game's physics. If the bounciness would go any higher, the ball would never stop bouncing. <br>
+Q:Why is there only one question in the FAQ? <br>
+A: Because I'm lazy and nobody asked questions.
+ <br>
+
+
+
+
+
+
+    </p>
+    <button  id="backFromHelpButton" role="button">
+      <span class="text">Back</span>
+    </button>
+  </div>
+
+  <!-- Shop Screen -->
+  <div id="shopDiv" style="display: none;">
+    <h2>Shop</h2>
+    <p>Balls: <span id="coinCountDisplay">0</span></p>
+ 
+    <div id="skinsContainer"></div>
+   
+    <button  id="backFromShopButton" role="button">
+      <span class="text">Back</span>
+    </button>
+ 
+  
+  <script src="script.js"></script>
+</body>
+</html>
